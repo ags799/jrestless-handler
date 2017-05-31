@@ -1,0 +1,24 @@
+service: jrestless-handler-example
+
+frameworkVersion: "=1.14.0"
+
+custom:
+  defaultStage: dev
+  defaultRegion: us-east-1
+
+provider:
+  name: aws
+  runtime: java8
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ${opt:region, self:custom.defaultRegion}
+
+package:
+  artifact: build/distributions/serverless-deployable.zip
+
+functions:
+  all:
+    handler: com.sharpandrew.jrestlesshandler.example.ExampleHandler
+    events:
+      - http:
+          path: /{proxy+}
+          method: any

@@ -1,0 +1,23 @@
+apply from: "${rootDir}/gradle/java.gradle"
+
+dependencies {
+  compile project(':jrestless-handler')
+}
+
+task deployable(type: Zip, group: 'deployment') {
+  // The path to this file must be set in the serverless.yml file under package.artifact.
+  baseName = 'serverless-deployable'
+  from compileJava
+  from processResources
+  into('lib') {
+    from configurations.runtime
+  }
+}
+
+task deploy(type: Exec, group: 'deployment', dependsOn: 'deployable') {
+  commandLine = ['serverless', 'deploy', '--stage', stage, '--region', region]
+}
+
+task removeDeployment(type: Exec, group: 'deployment') {
+  commandLine 'serverless', 'remove', '--stage', stage, '--region', region
+}

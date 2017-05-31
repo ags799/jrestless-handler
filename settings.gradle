@@ -1,0 +1,4 @@
+rootProject.name = 'jrestless-handler'
+
+include 'jrestless-handler'
+include 'example'

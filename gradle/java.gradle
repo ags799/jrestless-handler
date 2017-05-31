@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'nebula.dependency-recommender'
+apply plugin: 'net.ltgt.apt'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+  jcenter()
+  mavenCentral()
+}
+
+dependencyRecommendations {
+  propertiesFile file: file("${rootDir}/versions.props")
+}
+
+checkstyle {
+  configFile file("${rootDir}/checkstyle.xml")
+  maxWarnings = 0
+  toolVersion '7.6.1'
+}
+
+findbugs {
+  excludeFilter file("${rootDir}/findbugs-exclude.xml")
+}
+
+// http://stackoverflow.com/a/41101151
+task checkFindBugsReport {
+  doLast {
+    def xmlReport = findbugsMain.reports.xml
+    if (!xmlReport.destination.exists()) return;
+    def slurped = new XmlSlurper().parse(xmlReport.destination)
+    def report = ""
+    slurped['BugInstance'].eachWithIndex { bug, index ->
+      report += "${index + 1}. Found bug risk ${bug.@'type'} of category ${bug.@'category'} "
+      report += "in the following places"
+      bug['SourceLine'].each { place ->
+        report += "\n       ${place.@'classname'} at lines ${place.@'start'}:${place.@'end'}"
+      }
+      report += '\n '
+    }
+    if (report.length() > 1) {
+      logger.error "[FINDBUGS]\n ${report}"
+    }
+  }
+}
+findbugsMain.finalizedBy checkFindBugsReport
