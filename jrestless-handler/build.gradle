@@ -8,9 +8,9 @@ dependencies {
 }
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
+  publications {
+    nebula(MavenPublication) {
+      from components.java
     }
+  }
 }
