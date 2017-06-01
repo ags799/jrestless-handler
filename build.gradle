@@ -11,5 +11,5 @@ buildscript {
 }
 
 plugins {
-  id 'nebula.maven-resolved-dependencies' version '5.0.0'
+  id 'nebula.maven-publish' version '5.0.0'
 }
